@@ -16,8 +16,11 @@ func randomProduct() *models.Product {
 
 func TestInsertManyProducts(t *testing.T){
 	products := make([]*models.Product, 5)
+	productsMap := make(map[string] *models.Product)
 	for i:=0; i < 5; i++{
-		products[i] = randomProduct()
+		randomProduct := randomProduct()
+		products[i] = randomProduct
+		productsMap[randomProduct.Id] = randomProduct
 	}
 	models.InsertManyProducts(products)
 
@@ -52,6 +55,11 @@ func TestInsertManyProducts(t *testing.T){
 		t.Fail()
 	}
 
-	assert.Equal(t, products, storedProducts.All)
+	storedProductsMap := make(map[string]*models.Product)
+	for _, storedProduct := range storedProducts.All{
+		storedProductsMap[storedProduct.Id] = storedProduct
+	}
+
+	assert.Equal(t, productsMap, storedProductsMap)
 
 }

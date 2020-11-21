@@ -15,6 +15,7 @@ func insertProducts(w http.ResponseWriter, r *http.Request){
 		respondWithError(w, 400, "Unable to get file")
 		return
 	}
+	defer file.Close()
 
 	reader := csv.NewReader(file)
 	reader.Comma = '\''

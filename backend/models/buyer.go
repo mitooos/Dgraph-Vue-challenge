@@ -8,29 +8,30 @@ import (
 	"github.com/dgraph-io/dgo/v200/protos/api"
 )
 
-type Product struct{
+
+type Buyer struct{
 	Id string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
-	Price int `json:"price,omitempty"`
+	Age int `json:"age,omitempty"`
 	DType []string `json:"dgraph.type,omitempty"`
 }
 
-func NewProduct(id string, name string, price int)*Product{
-	return &Product{
+func NewBuyer(id string, name string, age int) *Buyer{
+	return &Buyer{
 		Id: id,
 		Name: name,
-		Price: price,
-		DType: []string{"Product"},
+		Age: age,
+		DType: []string{"Buyer"},
 	}
 }
 
-const productSchema = `
+const buyerSchema = `
 id: string @index(exact) .
 name: string .
-price: int .
+age: int .
 `
 
-func InsertManyProducts(products []*Product) error {
+func InsertManyBuyers(buyers []*Buyer) error {
 	c, err := NewClient()
 	if err != nil{
 		log.Panic(err)
@@ -39,7 +40,7 @@ func InsertManyProducts(products []*Product) error {
 	txn := c.NewTxn()
 	defer txn.Discard(context.Background())
 
-	out, err := json.Marshal(products)
+	out, err := json.Marshal(buyers)
 	if err != nil{
 		log.Panic(err)
 		return err

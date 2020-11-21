@@ -10,6 +10,7 @@ func Router()*chi.Mux{
 	r.Use(middleware.Logger)
 
 	r.Post("/products", insertProducts)
+	r.Post("/buyers", insertBuyers)
 
 
 	return r

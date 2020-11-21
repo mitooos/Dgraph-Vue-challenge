@@ -38,6 +38,16 @@ func setupDb(c *dgo.Dgraph) error{
 		log.Panic(err)
 		return err
 	}
+
+	err = c.Alter(context.Background(), &api.Operation{
+		Schema: buyerSchema,
+	})
+	if err != nil{
+		log.Print("Error loading buyer schema")
+		log.Panic(err)
+		return err
+	}
+
 	return nil
 }
 

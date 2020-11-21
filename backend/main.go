@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/controllers"
 	"backend/models"
 	"log"
 	"net/http"
@@ -14,8 +15,8 @@ func init(){
 }
 
 func main(){
-	router := models.Router()
+	router := controllers.Router()
 	log.Println("listening on port 5000")
 
-	http.ListenAndServe(":5000", router)
+	log.Fatal(http.ListenAndServe(":5000", router))
 }
