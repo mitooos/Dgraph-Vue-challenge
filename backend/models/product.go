@@ -31,7 +31,7 @@ price: int .
 `
 
 func InsertManyProducts(products []*Product) error{
-	c, err := newClient()
+	c, err := NewClient()
 	if err != nil{
 		log.Panic(err)
 		return err

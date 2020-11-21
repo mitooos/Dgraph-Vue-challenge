@@ -1,13 +1,9 @@
 package main
 
 import (
-	"backend/controllers"
 	"backend/models"
 	"log"
 	"net/http"
-
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 )
 
 func init(){
@@ -18,19 +14,8 @@ func init(){
 }
 
 func main(){
-	router := router()
+	router := models.Router()
 	log.Println("listening on port 5000")
 
 	http.ListenAndServe(":5000", router)
-}
-
-
-func router()*chi.Mux{
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-
-	r.Post("/products", controllers.InsertProducts)
-
-
-	return r
 }

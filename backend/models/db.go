@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func newClient() (*dgo.Dgraph, error){
+func NewClient() (*dgo.Dgraph, error){
 	d, err := grpc.Dial("localhost:9080", grpc.WithInsecure())
 	if err != nil{
 		log.Print("Error creating the client")
@@ -42,11 +42,11 @@ func setupDb(c *dgo.Dgraph) error{
 }
 
 func LoadSchemas() error{
-	c, err := newClient()
+	c, err := NewClient()
 	if err != nil{
 		return err
 	}
-	
+
 	return setupDb(c)
 }
 

@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func InsertProducts(w http.ResponseWriter, r *http.Request){
+func insertProducts(w http.ResponseWriter, r *http.Request){
 	file, _, err := r.FormFile("file")
 	if(err != nil){
 		log.Panic(err)
