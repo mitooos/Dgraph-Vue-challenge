@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"backend/models"
+	"backend/test_utils"
 	"bytes"
-	"context"
 	"encoding/json"
 	"mime/multipart"
 	"net/http"
@@ -14,18 +14,9 @@ import (
 )
 
 
-func randomBuyer() *models.Buyer {
-	return models.NewBuyer(randomString(8), randomString(20), randomInt(100))
-}
 
 func TestUploadBuyers(t *testing.T){
-	buyers := make([]*models.Buyer, 5)
-	buyersMap := make(map[string]*models.Buyer)
-	for i:=0; i < 5; i++{
-		randomBuyer := randomBuyer()
-		buyers[i] = randomBuyer
-		buyersMap[randomBuyer.Id] = randomBuyer
-	}
+	buyers, buyersMap := test_utils.RandomSliceOfBuyers(5)
 
 	jsonBody, err := json.Marshal(buyers)
 
@@ -58,13 +49,7 @@ func TestUploadBuyers(t *testing.T){
 	}
 	`
 
-	c, err := models.NewClient()
-	if err != nil{
-		t.Fail()
-	}
-	txn := c.NewTxn()
-
-	resp, err := txn.Query(context.Background(), query)
+	resp, err := models.ExecuteQuery(query)
 	if err != nil{
 		t.Fail()
 	}
@@ -77,10 +62,7 @@ func TestUploadBuyers(t *testing.T){
 		t.Fail()
 	}
 
-	storedBuyersMap := make(map[string]*models.Buyer)
-	for _, storedBuyer := range storedBuyers.All{
-		storedBuyersMap[storedBuyer.Id] = storedBuyer
-	}
+	storedBuyersMap := test_utils.MapOfBuyersFromSlice(storedBuyers.All)
 
 	assert.Equal(t, buyersMap, storedBuyersMap)
 }

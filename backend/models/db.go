@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewClient() (*dgo.Dgraph, error){
+func newClient() (*dgo.Dgraph, error){
 	d, err := grpc.Dial("localhost:9080", grpc.WithInsecure())
 	if err != nil{
 		log.Print("Error creating the client")
@@ -52,11 +52,45 @@ func setupDb(c *dgo.Dgraph) error{
 }
 
 func LoadSchemas() error{
-	c, err := NewClient()
+	c, err := newClient()
 	if err != nil{
 		return err
 	}
 
 	return setupDb(c)
+}
+
+func ExecuteQuery(query string)(*api.Response, error){
+	c, err := newClient()
+	if err != nil{
+		return nil, err
+	}
+	txn := c.NewTxn()
+
+	return txn.Query(context.Background(), query)
+}
+
+func ExecuteMutation(mutation []byte) error{
+	c, err := newClient()
+	if err != nil{
+		log.Panic(err)
+		return err
+	}
+	txn := c.NewTxn()
+	defer txn.Discard(context.Background())
+	
+
+	_, err = txn.Mutate(context.Background(), &api.Mutation{SetJson: mutation})
+	if err != nil{
+		log.Panic(err)
+		return err
+	}else{
+		err = txn.Commit(context.Background())
+		if err != nil{
+			log.Panic(err)
+			return err
+		}
+	}
+	return nil
 }
 

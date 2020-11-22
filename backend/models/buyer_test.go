@@ -2,28 +2,16 @@ package models_test
 
 import (
 	"backend/models"
-	"context"
+	"backend/test_utils"
 	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func randomBuyer() *models.Buyer {
-	return models.NewBuyer(randomString(8), randomString(20), randomInt(100))
-}
-
-
 func TestInsertManyBuyers(t *testing.T){
-	buyers := make([]*models.Buyer, 5)
-	buyersMap := make(map[string]*models.Buyer)
-	for i:=0; i < 5; i++{
-		randomBuyer := randomBuyer()
-		buyers[i] = randomBuyer
-		buyersMap[randomBuyer.Id] = randomBuyer
-	}
+	buyers, buyersMap := test_utils.RandomSliceOfBuyers(5)
 	models.InsertManyBuyers(buyers)
-
 
 	const query = `
 	{
@@ -36,13 +24,7 @@ func TestInsertManyBuyers(t *testing.T){
 	}
 	`
 
-	c, err := models.NewClient()
-	if err != nil{
-		t.Fail()
-	}
-	txn := c.NewTxn()
-
-	resp, err := txn.Query(context.Background(), query)
+	resp, err := models.ExecuteQuery(query)
 	if err != nil{
 		t.Fail()
 	}
@@ -55,10 +37,8 @@ func TestInsertManyBuyers(t *testing.T){
 		t.Fail()
 	}
 
-	storedBuyersMap := make(map[string]*models.Buyer)
-	for _, storedBuyer := range storedBuyers.All{
-		storedBuyersMap[storedBuyer.Id] = storedBuyer
-	}
+	storedBuyersMap := test_utils.MapOfBuyersFromSlice(storedBuyers.All)
+
 
 	assert.Equal(t, buyersMap, storedBuyersMap)
 }
