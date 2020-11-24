@@ -3,7 +3,7 @@ package test_utils
 import "backend/models"
 
 func randomBuyer() *models.Buyer {
-	return models.NewBuyer(randomString(8), randomString(20), randomInt(100))
+	return models.NewBuyer(RandomString(8), RandomString(20), RandomInt(100))
 }
 
 func RandomSliceOfBuyers(size int)([]*models.Buyer,map[string]*models.Buyer) {

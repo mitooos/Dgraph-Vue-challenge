@@ -21,12 +21,6 @@ func NewProduct(id string, name string, price int)*Product{
 	}
 }
 
-const productSchema = `
-id: string @index(exact) .
-name: string .
-price: int .
-`
-
 func InsertManyProducts(products []*Product) error {
 	out, err := json.Marshal(products)
 	if err != nil{

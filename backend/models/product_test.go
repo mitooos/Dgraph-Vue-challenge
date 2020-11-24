@@ -11,7 +11,6 @@ import (
 
 
 func TestInsertManyProducts(t *testing.T){
-	products, productsMap := test_utils.RandomSliceOfProducts(5)
 	models.InsertManyProducts(products)
 
 

@@ -9,8 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+
+
 func TestInsertManyBuyers(t *testing.T){
-	buyers, buyersMap := test_utils.RandomSliceOfBuyers(5)
 	models.InsertManyBuyers(buyers)
 
 	const query = `

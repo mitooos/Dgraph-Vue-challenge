@@ -31,19 +31,10 @@ func setupDb(c *dgo.Dgraph) error{
 	}
 	
 	err = c.Alter(context.Background(), &api.Operation{
-		Schema: productSchema,
+		Schema: schema,
 	})
 	if err != nil{
-		log.Print("Error loading product schema")
-		log.Panic(err)
-		return err
-	}
-
-	err = c.Alter(context.Background(), &api.Operation{
-		Schema: buyerSchema,
-	})
-	if err != nil{
-		log.Print("Error loading buyer schema")
+		log.Print("Error loading schemas")
 		log.Panic(err)
 		return err
 	}
@@ -81,6 +72,30 @@ func ExecuteMutation(mutation []byte) error{
 	
 
 	_, err = txn.Mutate(context.Background(), &api.Mutation{SetJson: mutation})
+	if err != nil{
+		log.Panic(err)
+		return err
+	}else{
+		err = txn.Commit(context.Background())
+		if err != nil{
+			log.Panic(err)
+			return err
+		}
+	}
+	return nil
+}
+
+func ExecuteMutationNQuad(upsert []byte) error{
+	c, err := newClient()
+	if err != nil{
+		log.Panic(err)
+		return err
+	}
+	txn := c.NewTxn()
+	defer txn.Discard(context.Background())
+	
+
+	_, err = txn.Mutate(context.Background(), &api.Mutation{SetNquads: upsert})
 	if err != nil{
 		log.Panic(err)
 		return err

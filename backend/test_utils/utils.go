@@ -7,7 +7,7 @@ import (
 
 
 
-func randomString(length int) string {
+func RandomString(length int) string {
 
 	var seededRand *rand.Rand = rand.New(
 		rand.NewSource(time.Now().UnixNano()))
@@ -23,7 +23,7 @@ func randomString(length int) string {
 	return string(b)
 }
 
-func randomInt(max int) int {
+func RandomInt(max int) int {
 	var seededRand *rand.Rand = rand.New(
 		rand.NewSource(time.Now().UnixNano()))
 	

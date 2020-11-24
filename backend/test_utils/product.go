@@ -3,7 +3,7 @@ package test_utils
 import "backend/models"
 
 func randomProduct() *models.Product {
-	return models.NewProduct(randomString(8), randomString(40), randomInt(3000))
+	return models.NewProduct(RandomString(8), RandomString(40), RandomInt(3000))
 }
 
 func RandomSliceOfProducts(size int)([]*models.Product, map[string] *models.Product){

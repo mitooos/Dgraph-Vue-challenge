@@ -11,6 +11,7 @@ type Buyer struct{
 	Name string `json:"name,omitempty"`
 	Age int `json:"age,omitempty"`
 	DType []string `json:"dgraph.type,omitempty"`
+	Transactions []Transaction `json:"transactions,omitempty"`
 }
 
 func NewBuyer(id string, name string, age int) *Buyer{
@@ -21,12 +22,6 @@ func NewBuyer(id string, name string, age int) *Buyer{
 		DType: []string{"Buyer"},
 	}
 }
-
-const buyerSchema = `
-id: string @index(exact) .
-name: string .
-age: int .
-`
 
 func InsertManyBuyers(buyers []*Buyer) error {
 	out, err := json.Marshal(buyers)
