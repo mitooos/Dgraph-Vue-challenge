@@ -16,7 +16,12 @@ import (
 
 
 func TestUploadBuyers(t *testing.T){
-	jsonBody, err := json.Marshal(buyers)
+	nBuyers, _ := test_utils.RandomSliceOfBuyers(5)
+	for _, nBuyer := range nBuyers{
+		buyersMap[nBuyer.Id] = nBuyer
+	}
+	
+	jsonBody, err := json.Marshal(nBuyers)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -63,4 +68,22 @@ func TestUploadBuyers(t *testing.T){
 	storedBuyersMap := test_utils.MapOfBuyersFromSlice(storedBuyers.All)
 
 	assert.Equal(t, buyersMap, storedBuyersMap)
+}
+
+func TestGetBuyers(t *testing.T){
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/buyers", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 200, w.Code)
+
+	var retrievedBuyers []*models.Buyer
+	if err := json.Unmarshal(w.Body.Bytes(), &retrievedBuyers); err != nil{
+		t.Fail()
+	}
+
+	retrievedBuyersMap := test_utils.MapOfBuyersFromSlice(retrievedBuyers)
+
+	assert.Equal(t, retrievedBuyersMap, buyersMap)
+
 }

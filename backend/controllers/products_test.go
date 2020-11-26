@@ -24,7 +24,13 @@ func productsToCsv(products []*models.Product)string{
 }
 
 func TestUploadProducts(t *testing.T){
-	csvBody := []byte(productsToCsv(products))
+	nProducts, _ := test_utils.RandomSliceOfProducts(5)
+	for _, nProduct := range nProducts{
+		productsMap[nProduct.Id] = nProduct
+	}
+	
+	csvBody := []byte(productsToCsv(nProducts))
+
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)

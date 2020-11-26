@@ -11,7 +11,12 @@ import (
 
 
 func TestInsertManyProducts(t *testing.T){
-	models.InsertManyProducts(products)
+	nProducts, _ := test_utils.RandomSliceOfProducts(5)
+	models.InsertManyProducts(nProducts)
+
+	for _, nProduct := range nProducts{
+		productsMap[nProduct.Id] = nProduct
+	}
 
 
 	const query = `

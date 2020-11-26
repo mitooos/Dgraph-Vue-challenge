@@ -12,7 +12,12 @@ import (
 
 
 func TestInsertManyBuyers(t *testing.T){
-	models.InsertManyBuyers(buyers)
+	nBuyers, _ := test_utils.RandomSliceOfBuyers(5)
+	models.InsertManyBuyers(nBuyers)
+
+	for _, nBuyer := range nBuyers{
+		buyersMap[nBuyer.Id] = nBuyer
+	}
 
 	const query = `
 	{
@@ -42,4 +47,13 @@ func TestInsertManyBuyers(t *testing.T){
 
 
 	assert.Equal(t, buyersMap, storedBuyersMap)
+}
+
+func TestGetBuyers(t *testing.T){
+	retrievedBuyers, err := models.GetBuyers()
+
+	retrievedBuyerssMap := test_utils.MapOfBuyersFromSlice(retrievedBuyers)
+
+	assert.NoError(t, err)
+	assert.Equal(t, buyersMap, retrievedBuyerssMap)
 }

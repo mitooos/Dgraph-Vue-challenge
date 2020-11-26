@@ -32,3 +32,32 @@ func InsertManyBuyers(buyers []*Buyer) error {
 	
 	return ExecuteMutation(out)
 }
+
+func GetBuyers() ([]*Buyer, error) {
+	query := `
+		{
+			Buyers(func: type(Buyer)){
+				id
+				name
+				age
+				dgraph.type
+			}
+		}
+	`	
+
+	rep, err := ExecuteQuery(query)
+	if err != nil{
+		log.Panic(err)
+		return nil, err
+	}
+
+	var buyers struct{
+		Buyers []*Buyer
+	}
+
+	if err := json.Unmarshal(rep.Json, &buyers); err != nil{
+		log.Panic(err)
+		return nil, err
+	}
+	return buyers.Buyers, nil
+}

@@ -46,3 +46,13 @@ func insertBuyers(w http.ResponseWriter, r *http.Request){
 
 	respondWithJSON(w, 200, buyers)
 }
+
+func getBuyers(w http.ResponseWriter, r *http.Request){
+	buyers, err := models.GetBuyers()
+	if err != nil{
+		respondWithError(w, 500, "Unable to get buyers")
+		return
+	}
+
+	respondWithJSON(w, 200, buyers)
+}
