@@ -85,7 +85,7 @@ func ExecuteMutation(mutation []byte) error{
 	return nil
 }
 
-func ExecuteMutationNQuad(upsert []byte) error{
+func ExecuteMutationNQuad(mutation []byte) error{
 	c, err := newClient()
 	if err != nil{
 		log.Panic(err)
@@ -95,16 +95,10 @@ func ExecuteMutationNQuad(upsert []byte) error{
 	defer txn.Discard(context.Background())
 	
 
-	_, err = txn.Mutate(context.Background(), &api.Mutation{SetNquads: upsert})
+	_, err = txn.Mutate(context.Background(), &api.Mutation{SetNquads: mutation, CommitNow: true})
 	if err != nil{
 		log.Panic(err)
 		return err
-	}else{
-		err = txn.Commit(context.Background())
-		if err != nil{
-			log.Panic(err)
-			return err
-		}
 	}
 	return nil
 }

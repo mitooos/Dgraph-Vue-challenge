@@ -16,8 +16,6 @@ import (
 
 
 func TestUploadBuyers(t *testing.T){
-	buyers, buyersMap := test_utils.RandomSliceOfBuyers(5)
-
 	jsonBody, err := json.Marshal(buyers)
 
 	body := new(bytes.Buffer)

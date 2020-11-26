@@ -11,6 +11,7 @@ func Router()*chi.Mux{
 
 	r.Post("/products", insertProducts)
 	r.Post("/buyers", insertBuyers)
+	r.Post("/transactions", insertTransactions)
 
 
 	return r

@@ -18,7 +18,7 @@ type Transaction struct{
 	DType []string `json:"dgraph.type,omitempty"`
 }
 
-func InsertTransaction(id string, date time.Time, buyerId string, ip string, device string, productIds []string) error {
+func InsertTransaction(id string, date time.Time, buyerId string, ip string, device string, productIds string) error {
 
 	buyerUidQuery := fmt.Sprintf(`
 		{
@@ -43,11 +43,6 @@ func InsertTransaction(id string, date time.Time, buyerId string, ip string, dev
 		return err
 	}
 
-	productIdsString := ""
-
-	for _, productId := range productIds {
-		productIdsString += (" " + productId)
-	}
 
 	buyerUid := *buyerUidDecode.Get[0].Uid
 	
@@ -58,7 +53,7 @@ func InsertTransaction(id string, date time.Time, buyerId string, ip string, dev
 				uid
 			}
 		}
-	`, productIdsString)
+	`, productIds)
 	res, err = ExecuteQuery(productsUidQuery)
 	if err != nil{
 		panic(err)

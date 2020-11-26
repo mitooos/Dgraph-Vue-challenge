@@ -24,7 +24,6 @@ func productsToCsv(products []*models.Product)string{
 }
 
 func TestUploadProducts(t *testing.T){
-	products, productsMap := test_utils.RandomSliceOfProducts(5)
 	csvBody := []byte(productsToCsv(products))
 
 	body := new(bytes.Buffer)

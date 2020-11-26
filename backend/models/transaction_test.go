@@ -21,11 +21,12 @@ func TestInsertTransaction(t *testing.T){
 	ip := test_utils.RandomString(16)
 	device := test_utils.RandomString(10)
 
-	productsIds := make([]string, 5)
-	for i, product := range transactionProducts{
-		productsIds[i] = product.Id
+	productsIds := ""
+	for _, product := range transactionProducts{
+		productsIds += (product.Id + " ")
 		products = append(products, product)
 	}
+	productsIds = productsIds[0:len(productsIds) - 1]
 
 	buyers = append(buyers, buyer[0])
 	if err := models.InsertManyBuyers(buyer); err != nil{
