@@ -5,6 +5,7 @@ import (
 	"backend/test_utils"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -56,4 +57,72 @@ func TestGetBuyers(t *testing.T){
 
 	assert.NoError(t, err)
 	assert.Equal(t, buyersMap, retrievedBuyerssMap)
+}
+
+var buyersWithSameIp map[string]*models.Buyer
+var buyerT *models.Buyer
+var mostBoughtProducts map[string]*models.Product
+
+
+func insertTransactionsWithBuyers(t *testing.T){
+	ip := test_utils.RandomString(16)
+	buyersWithSameIp = make(map[string]*models.Buyer)
+	mostBoughtProducts = make(map[string]*models.Product)
+
+	transactionProducts, _ := test_utils.RandomSliceOfProducts(10)
+
+	productsIds := ""
+	for _, product := range transactionProducts{
+		productsIds += (product.Id + " ")
+		products = append(products, product)
+		mostBoughtProducts[product.Id] = product
+	}
+	productsIds = productsIds[0:len(productsIds) - 1]
+	if err := models.InsertManyProducts(transactionProducts); err != nil{
+			t.Fail()
+	}
+	
+	for i := 0; i < 5; i++{
+		buyer, _ := test_utils.RandomSliceOfBuyers(1)
+		id := test_utils.RandomString(8)
+		date := time.Now()
+		buyerId := buyer[0].Id
+		device := test_utils.RandomString(10)
+
+		buyers = append(buyers, buyer[0])
+		buyersWithSameIp[buyer[0].Id] = buyer[0]
+		buyersMap[buyer[0].Id] = buyer[0]
+		if err := models.InsertManyBuyers(buyer); err != nil{
+			t.Fail()
+		}
+		
+		for _, transactionProduct := range transactionProducts{
+			productsMap[transactionProduct.Id] = transactionProduct
+		}
+
+		if  err := models.InsertTransaction(id, date, buyerId, ip, device, productsIds); err != nil{
+			panic(err)
+			t.Fail()
+		}
+		buyerT = buyer[0]
+	}
+}
+
+func TestGetBuyer(t *testing.T){
+	insertTransactionsWithBuyers(t)
+	resp, err := models.GetBuyer(buyerT.Id)
+	assert.Nil(t, err)
+
+	resp.Buyer[0].Transactions = []models.Transaction(nil)
+	assert.Equal(t, buyerT, resp.Buyer[0])
+
+	buyersWithSameIpMap := test_utils.MapOfBuyersFromSlice(resp.BuyersWithSameIP)
+	
+	delete(buyersWithSameIp, buyerT.Id)
+	assert.Equal(t, buyersWithSameIp, buyersWithSameIpMap)
+
+	for _, mostBoughtProduct := range resp.RecommendedProducts{
+		assert.Equal(t, 5, mostBoughtProduct.Count)
+		assert.NotNil(t, mostBoughtProducts[mostBoughtProduct.Id])
+	}
 }

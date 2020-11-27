@@ -68,11 +68,6 @@ func transactionsToFileFormat(transactions map[string]*models.Transaction)string
 }
 
 func TestInsertTransactions(t *testing.T){
-	transactions, err := randomMapOfTransactions(5)
-	if err != nil {
-		panic(err)
-		t.Fail()
-	}
 	transactionsFileFormat := transactionsToFileFormat(transactions)
 
 	body := new(bytes.Buffer)

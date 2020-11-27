@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi"
 )
 
 func insertBuyers(w http.ResponseWriter, r *http.Request){
@@ -55,4 +57,20 @@ func getBuyers(w http.ResponseWriter, r *http.Request){
 	}
 
 	respondWithJSON(w, 200, buyers)
+}
+
+func getBuyer(w http.ResponseWriter, r *http.Request){
+	buyerID := chi.URLParam(r, "buyerId")
+	resp, err := models.GetBuyer(buyerID)
+	if err != nil{
+		respondWithError(w, 500, "Unable to get buyer")
+		return
+	}
+
+	if len(resp.Buyer)==0{
+		respondWithError(w, 404, "Buyer not found")
+		return
+	}
+
+	respondWithJSON(w, 200, resp)
 }
