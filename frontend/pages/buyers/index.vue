@@ -1,10 +1,14 @@
 <template>
   <div>
-    <h1 class="text-center">Buyers</h1>
+    <h1 class="text-center">
+      Buyers
+    </h1>
     <div v-for="(buyer, index) of buyers" :key="index" class="buyer-element pa-4 text-center light-green darken-2 text-no-wrap rounded-xl">
-      <h2>{{ buyer.name }}</h2>
-      <h3>Id: {{ buyer.id }} </h3>
-      <p>Age: {{ buyer.age }}</p>
+      <NuxtLink :to="'/buyers/'+buyer.id">
+        <h2>{{ buyer.name }}</h2>
+        <h3>Id: {{ buyer.id }} </h3>
+        <p>Age: {{ buyer.age }}</p>
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -21,5 +25,8 @@ export default {
 <style scoped>
   .buyer-element{
     margin: 10px;
+  }
+  a{
+    color: white !important;
   }
 </style>
