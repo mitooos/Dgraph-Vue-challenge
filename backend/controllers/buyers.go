@@ -62,7 +62,17 @@ func insertBuyers(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBuyers(w http.ResponseWriter, r *http.Request) {
-	buyers, err := models.GetBuyers()
+	first, ok := r.URL.Query()["first"]
+	if !ok {
+		first = []string{"10000"}
+	}
+
+	offset, ok := r.URL.Query()["offset"]
+	if !ok {
+		offset = []string{"0"}
+	}
+
+	buyers, err := models.GetBuyers(first[0], offset[0])
 	if err != nil {
 		respondWithError(w, 500, "Unable to get buyers")
 		return

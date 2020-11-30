@@ -54,7 +54,7 @@ func TestInsertManyBuyers(t *testing.T) {
 }
 
 func TestGetBuyers(t *testing.T) {
-	retrievedBuyers, err := models.GetBuyers()
+	retrievedBuyers, err := models.GetBuyers("1000", "0")
 
 	retrievedBuyersMap := test_utils.MapOfBuyersFromSlice(retrievedBuyers)
 

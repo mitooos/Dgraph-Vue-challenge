@@ -10,14 +10,40 @@
         <p>Age: {{ buyer.age }}</p>
       </NuxtLink>
     </div>
+    <div class="text-center">
+      <v-pagination
+        v-model="page"
+        :length="6"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   async asyncData ({ $axios }) {
-    const buyers = await $axios.$get('http://127.0.0.1:5000/buyers')
+    const buyers = await $axios.$get('http://127.0.0.1:5000/buyers?first=10&offset=0')
     return { buyers }
+  },
+  data () {
+    return {
+      page: 1
+    }
+  },
+  watch: {
+    // eslint-disable-next-line object-shorthand
+    page: function (val) {
+      this.page = val
+      this.fetchData()
+    }
+  },
+  methods: {
+    fetchData () {
+      this.$axios.$get(`http://127.0.0.1:5000/buyers?first=10&offset=${this.page * 10}`).then((resp) => {
+        this.buyers = resp
+        window.scrollTo(0, 0)
+      })
+    }
   }
 }
 </script>

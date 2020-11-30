@@ -36,10 +36,10 @@ func InsertManyBuyers(buyers []*Buyer) error {
 	return ExecuteMutation(out)
 }
 
-func GetBuyers() ([]*Buyer, error) {
-	query := `
+func GetBuyers(first string, offset string) ([]*Buyer, error) {
+	query := fmt.Sprintf(`
 		{
-			Buyers(func: type(Buyer)){
+			Buyers(func: type(Buyer), first: %s, offset: %s){
 				id
 				name
 				age
@@ -47,7 +47,7 @@ func GetBuyers() ([]*Buyer, error) {
 				dgraph.type
 			}
 		}
-	`
+	`, first, offset)
 
 	rep, err := ExecuteQuery(query)
 	if err != nil {
