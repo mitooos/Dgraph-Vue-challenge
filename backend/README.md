@@ -12,4 +12,4 @@ $ cd controllers || models
 $ go test
 ```
 
-note: tests must be run separately if useing the same DB
+note: tests must be run separately if using the same DB
