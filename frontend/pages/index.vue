@@ -1,5 +1,8 @@
 <template>
   <div>
-    <h1>Hello world!</h1>
+    <h1>
+      Italian Restaurant
+    </h1>
+    <img src="banner.jpg" alt="banner">
   </div>
 </template>
