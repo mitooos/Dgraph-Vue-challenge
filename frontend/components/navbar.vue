@@ -20,6 +20,12 @@
             <v-btn text to="/data/products">
               Products
             </v-btn>
+            <v-btn text to="/data/buyers">
+              Buyers
+            </v-btn>
+            <v-btn text to="/data/transactions">
+              Transactions
+            </v-btn>
           </v-list>
         </v-menu>
       </v-toolbar-items>
