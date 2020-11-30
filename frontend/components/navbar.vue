@@ -1,16 +1,34 @@
 <template>
   <div>
-    <v-tabs>
-      <v-tab>
+    <v-toolbar>
+      <v-toolbar-title class="title">
         <NuxtLink to="/">
           Home
         </NuxtLink>
-      </v-tab>
-      <v-tab>
-        <NuxtLink to="/buyers">
+      </v-toolbar-title>
+      <v-toolbar-items>
+        <v-btn text to="/buyers">
           Buyers
-        </NuxtLink>
-      </v-tab>
-    </v-tabs>
+        </v-btn>
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn text dark to="#" v-bind="attrs" v-on="on">
+              Sync data
+            </v-btn>
+          </template>
+          <v-list>
+            <v-btn text to="/data/products">
+              Products
+            </v-btn>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
+    </v-toolbar>
   </div>
 </template>
+
+<style scoped>
+  .title{
+    margin-right: 10px;
+  }
+</style>
