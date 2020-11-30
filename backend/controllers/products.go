@@ -13,7 +13,7 @@ func insertProducts(w http.ResponseWriter, r *http.Request) {
 	file, _, err := r.FormFile("file")
 	defer file.Close()
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
 		respondWithError(w, 400, "Unable to get file")
 		return
 	}
@@ -22,14 +22,14 @@ func insertProducts(w http.ResponseWriter, r *http.Request) {
 	reader.Comma = '\''
 	record, err := reader.ReadAll()
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
 		respondWithError(w, 400, "Unable to read csv")
 		return
 	}
 
 	date, err := time.Parse("2006-01-02", r.FormValue("date"))
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
 		respondWithError(w, 400, "Cannot parse date field")
 		return
 	}

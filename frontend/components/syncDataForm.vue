@@ -89,7 +89,10 @@ export default {
       this.$axios.$post(`http://${this.url}`, formData).then((resp) => {
         this.loading = false
         alert('Done loading data')
-      }).catch(err => alert(err))
+      }).catch((err) => {
+        this.loading = false
+        alert(err.response.data.message)
+      })
     }
   }
 }
