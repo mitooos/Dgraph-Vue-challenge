@@ -18,12 +18,14 @@ const schema = `
 		name
 		age
 		transactions
+		date
 	}
 
 	type Product{
 		id
 		name
 		price
+		date
 	}
 
 	type Transaction{

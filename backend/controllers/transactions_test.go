@@ -14,46 +14,47 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func randomIp()string{
+func randomIp() string {
 	return fmt.Sprintf("%d.%d.%d.%d", test_utils.RandomInt(256), test_utils.RandomInt(256), test_utils.RandomInt(256), test_utils.RandomInt(256))
 }
 
-func randomMapOfTransactions(size int)(map[string]*models.Transaction, error){
+func randomMapOfTransactions(size int) (map[string]*models.Transaction, error) {
 	ans := make(map[string]*models.Transaction)
-	for i := 0; i < size; i++{
+	for i := 0; i < size; i++ {
 		buyer, _ := test_utils.RandomSliceOfBuyers(1)
 		transactionProducts, _ := test_utils.RandomSliceOfProducts(5)
 		id := test_utils.RandomString(12)
 		ip := randomIp()
 		device := test_utils.RandomString(10)
-		
-		if err := models.InsertManyBuyers(buyer); err != nil{
+
+		if err := models.InsertManyBuyers(buyer); err != nil {
 			return nil, err
 		}
 		buyers = append(buyers, buyer...)
 		buyersMap[buyer[0].Id] = buyer[0]
 
-		if err := models.InsertManyProducts(transactionProducts); err != nil{
+		if err := models.InsertManyProducts(transactionProducts); err != nil {
 			return nil, err
 		}
 		products = append(products, transactionProducts...)
-		for _, product := range transactionProducts{
+		for _, product := range transactionProducts {
 			productsMap[product.Id] = product
 		}
 
 		ans[id] = &models.Transaction{
-			Id: id,
-			Buyer: buyer[0],
-			Ip: ip,
-			Device: device,
+			Id:       id,
+			Buyer:    buyer[0],
+			Ip:       ip,
+			Device:   device,
+			Date:     date,
 			Products: transactionProducts,
-			DType: []string{"Transaction"},
+			DType:    []string{"Transaction"},
 		}
 	}
 	return ans, nil
 }
 
-func transactionsToFileFormat(transactions map[string]*models.Transaction)string{
+func transactionsToFileFormat(transactions map[string]*models.Transaction) string {
 	ans := ""
 	for _, transaction := range transactions {
 		productIds := ""
@@ -61,24 +62,25 @@ func transactionsToFileFormat(transactions map[string]*models.Transaction)string
 			productIds += (product.Id + ",")
 		}
 		//remove last comma
-		productIds = productIds[0:len(productIds) - 1]
+		productIds = productIds[0 : len(productIds)-1]
 		ans += fmt.Sprintf("#%s\000%s\000%s\000%s\000(%s)\000\000", transaction.Id, transaction.Buyer.Id, transaction.Ip, transaction.Device, productIds)
 	}
 	return ans
 }
 
-func TestInsertTransactions(t *testing.T){
+func TestInsertTransactions(t *testing.T) {
 	transactionsFileFormat := transactionsToFileFormat(transactions)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-
 
 	part, err := writer.CreateFormFile("file", "transactions")
 	if err != nil {
 		t.Fail()
 	}
 	part.Write([]byte(transactionsFileFormat))
+
+	writer.WriteField("date", date.Format("2006-01-02"))
 	writer.Close()
 
 	w := httptest.NewRecorder()
@@ -100,12 +102,14 @@ func TestInsertTransactions(t *testing.T){
 				id
 				name
 				age
+				date
 				dgraph.type
 			}
 			products{
 				id
 				name
 				price
+				date
 				dgraph.type
 			}
 		}
@@ -113,7 +117,7 @@ func TestInsertTransactions(t *testing.T){
 	`
 
 	resp, err := models.ExecuteQuery(query)
-	if err != nil{
+	if err != nil {
 		t.Fail()
 	}
 
@@ -121,14 +125,26 @@ func TestInsertTransactions(t *testing.T){
 		All []*models.Transaction
 	}
 
-	if err := json.Unmarshal(resp.GetJson(), &storedTransactions); err != nil{
+	if err := json.Unmarshal(resp.GetJson(), &storedTransactions); err != nil {
 		t.Fail()
 	}
 
-	for _, storedTransaction := range storedTransactions.All{
+	for _, storedTransaction := range storedTransactions.All {
 		transaction := transactions[storedTransaction.Id]
 		transaction.Date = storedTransaction.Date
-		assert.Equal(t, test_utils.MapOfProductsFromSlice(transaction.Products), test_utils.MapOfProductsFromSlice(storedTransaction.Products))
+		transactionProducts := test_utils.MapOfProductsFromSlice(transaction.Products)
+		storedProducts := test_utils.MapOfProductsFromSlice(storedTransaction.Products)
+
+		for id, transactionProduct := range transactionProducts {
+			assert.Equal(t, transactionProduct.Date.Format("2006-01-02"), storedProducts[id].Date.Format("2006-01-02"))
+			storedProducts[id].Date = transactionProduct.Date
+		}
+
+		assert.Equal(t, transactionProducts, storedProducts)
+
+		assert.Equal(t, transaction.Buyer.Date.Format("2006-01-02"), storedTransaction.Buyer.Date.Format("2006-01-02"))
+		transaction.Buyer.Date = storedTransaction.Buyer.Date
+
 		storedTransaction.Products = transaction.Products
 		assert.Equal(t, transaction, storedTransaction)
 	}

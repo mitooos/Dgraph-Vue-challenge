@@ -4,33 +4,35 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 )
 
-
-type Buyer struct{
-	Id string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age int `json:"age,omitempty"`
-	DType []string `json:"dgraph.type,omitempty"`
+type Buyer struct {
+	Id           string        `json:"id,omitempty"`
+	Name         string        `json:"name,omitempty"`
+	Age          int           `json:"age,omitempty"`
+	Date         time.Time     `json:"date,omiempty"`
+	DType        []string      `json:"dgraph.type,omitempty"`
 	Transactions []Transaction `json:"transactions,omitempty"`
 }
 
-func NewBuyer(id string, name string, age int) *Buyer{
+func NewBuyer(id string, name string, age int, date time.Time) *Buyer {
 	return &Buyer{
-		Id: id,
-		Name: name,
-		Age: age,
+		Id:    id,
+		Name:  name,
+		Age:   age,
+		Date:  date,
 		DType: []string{"Buyer"},
 	}
 }
 
 func InsertManyBuyers(buyers []*Buyer) error {
 	out, err := json.Marshal(buyers)
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 		return err
 	}
-	
+
 	return ExecuteMutation(out)
 }
 
@@ -41,39 +43,40 @@ func GetBuyers() ([]*Buyer, error) {
 				id
 				name
 				age
+				date
 				dgraph.type
 			}
 		}
-	`	
+	`
 
 	rep, err := ExecuteQuery(query)
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 		return nil, err
 	}
 
-	var buyers struct{
+	var buyers struct {
 		Buyers []*Buyer
 	}
 
-	if err := json.Unmarshal(rep.Json, &buyers); err != nil{
+	if err := json.Unmarshal(rep.Json, &buyers); err != nil {
 		log.Panic(err)
 		return nil, err
 	}
 	return buyers.Buyers, nil
 }
 
-type BuyerDetailResponse struct{
-		Buyer []*Buyer
-		BuyersWithSameIP []*Buyer
-		RecommendedProducts []*struct{
-			Id string `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Count int `json:"count,omitempty"`
-		}
+type BuyerDetailResponse struct {
+	Buyer               []*Buyer
+	BuyersWithSameIP    []*Buyer
+	RecommendedProducts []*struct {
+		Id    string `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Count int    `json:"count,omitempty"`
 	}
+}
 
-func GetBuyer(id string)(*BuyerDetailResponse, error){
+func GetBuyer(id string) (*BuyerDetailResponse, error) {
 	query := fmt.Sprintf(`
 	{
 		var(func: eq(id, "%s")){
@@ -90,6 +93,7 @@ func GetBuyer(id string)(*BuyerDetailResponse, error){
 			id
 			name
 			age
+			date
 			dgraph.type
 			transactions{
 				id
@@ -116,6 +120,7 @@ func GetBuyer(id string)(*BuyerDetailResponse, error){
 			id
 			name
 			age
+			date
 			dgraph.type
 		}
   
@@ -132,14 +137,14 @@ func GetBuyer(id string)(*BuyerDetailResponse, error){
 	}`, id)
 
 	rep, err := ExecuteQuery(query)
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 		return nil, err
 	}
 
 	var response BuyerDetailResponse
 
-	if err := json.Unmarshal(rep.Json, &response); err != nil{
+	if err := json.Unmarshal(rep.Json, &response); err != nil {
 		log.Panic(err)
 		return nil, err
 	}
